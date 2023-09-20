@@ -3,8 +3,8 @@ package keeper
 import (
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
-	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
     <%= if (isIBC) { %>errorsmod "cosmossdk.io/errors"
@@ -19,10 +19,9 @@ import (
 
 type (
 	Keeper struct {
-		cdc      	codec.BinaryCodec
-		storeKey 	storetypes.StoreKey
-		memKey   	storetypes.StoreKey
-        logger      log.Logger
+		cdc      	 codec.BinaryCodec
+		storeService store.KVStoreService
+        logger       log.Logger
 
         // the address capable of executing a MsgUpdateParams message. Typically, this
         // should be the x/gov module account.
@@ -37,8 +36,7 @@ type (
 
 func NewKeeper(
     cdc codec.BinaryCodec,
-    storeKey,
-    memKey storetypes.StoreKey,
+    storeService store.KVStoreService,
     logger log.Logger,
 	authority string,<%= if (isIBC) { %>
 	ibcKeeperFn func() *ibckeeper.Keeper,
@@ -51,13 +49,12 @@ func NewKeeper(
 	}
 
 	return Keeper{
-        cdc:      	cdc,
-        storeKey: 	storeKey,
-        memKey:   	memKey,
-		authority: authority,
-		logger:    logger,<%= if (isIBC) { %>
-        ibcKeeperFn:   ibcKeeperFn,
-        scopedKeeper:  scopedKeeper,<% } %>
+        cdc:      	    cdc,
+        storeService:   storeService,
+		authority:      authority,
+		logger:         logger,<%= if (isIBC) { %>
+        ibcKeeperFn:    ibcKeeperFn,
+        scopedKeeper:   scopedKeeper,<% } %>
 		<%= for (dependency) in dependencies { %>
 		<%= toVariableName(dependency.KeeperName()) %>: <%= toVariableName(dependency.KeeperName()) %>,<% } %>
 	}
@@ -102,13 +99,13 @@ func (k Keeper) BindPort(ctx sdk.Context, portID string) error {
 
 // GetPort returns the portID for the IBC app module. Used in ExportGenesis
 func (k Keeper) GetPort(ctx sdk.Context) string {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	return string(store.Get(types.PortKey))
 }
 
 // SetPort sets the portID for the IBC app module. Used in InitGenesis
 func (k Keeper) SetPort(ctx sdk.Context, portID string) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	store.Set(types.PortKey, []byte(portID))
 }
 

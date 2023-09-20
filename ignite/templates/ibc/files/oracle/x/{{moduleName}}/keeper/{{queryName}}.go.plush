@@ -9,7 +9,7 @@ import (
 
 // Set<%= queryName.UpperCamel %>Result saves the <%= queryName.UpperCamel %> result
 func (k Keeper) Set<%= queryName.UpperCamel %>Result(ctx sdk.Context, requestID types.OracleRequestID, result types.<%= queryName.UpperCamel %>Result) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	store.Set(types.<%= queryName.UpperCamel %>ResultStoreKey(requestID), k.cdc.MustMarshal(&result))
 }
 
@@ -36,7 +36,7 @@ func (k Keeper) GetLast<%= queryName.UpperCamel %>ID(ctx sdk.Context) int64 {
 
 // SetLast<%= queryName.UpperCamel %>ID saves the id from the last <%= queryName.UpperCamel %> request
 func (k Keeper) SetLast<%= queryName.UpperCamel %>ID(ctx sdk.Context, id types.OracleRequestID) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	store.Set(types.KeyPrefix(types.Last<%= queryName.UpperCamel %>IDKey),
 		k.cdc.MustMarshalLengthPrefixed(&gogotypes.Int64Value{Value: int64(id)}))
 }

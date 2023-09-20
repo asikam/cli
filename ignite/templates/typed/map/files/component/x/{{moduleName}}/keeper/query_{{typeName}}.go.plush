@@ -19,7 +19,7 @@ func (k Keeper) <%= TypeName.UpperCamel %>All(goCtx context.Context, req *types.
 	var <%= TypeName.LowerCamel %>s []types.<%= TypeName.UpperCamel %>
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	<%= TypeName.LowerCamel %>Store := prefix.NewStore(store, types.KeyPrefix(types.<%= TypeName.UpperCamel %>KeyPrefix))
 
 	pageRes, err := query.Paginate(<%= TypeName.LowerCamel %>Store, req.Pagination, func(key []byte, value []byte) error {
