@@ -4,6 +4,7 @@ import (
 	"embed"
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"github.com/emicklei/proto"
 
@@ -146,19 +147,33 @@ func protoQueryModify(opts *Options) genny.RunFn {
 
 func cliQueryModify(replacer placeholder.Replacer, opts *Options) genny.RunFn {
 	return func(r *genny.Runner) error {
-		path := filepath.Join(opts.AppPath, "x", opts.ModuleName, "client/cli/query.go")
+		path := filepath.Join(opts.AppPath, "x", opts.ModuleName, "module/autocli.go")
 		f, err := r.Disk.Find(path)
 		if err != nil {
 			return err
 		}
 
-		template := `cmd.AddCommand(Cmd%[2]v())
+		var positionalArgs string
+		for _, field := range opts.ReqFields {
+			positionalArgs += fmt.Sprintf(`{ProtoField: "%s"}, `, field.ProtoFieldName())
+		}
 
-%[1]v`
+		template := `{
+					RpcMethod: "%v",
+					Use: "%v %s",
+					Short: "%v",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{%s},
+				},
+
+				%v`
 		replacement := fmt.Sprintf(
 			template,
-			Placeholder,
 			opts.QueryName.UpperCamel,
+			opts.QueryName.Kebab,
+			opts.Description,
+			opts.ReqFields.String(),
+			strings.TrimSpace(positionalArgs),
+			Placeholder,
 		)
 		content := replacer.Replace(f.String(), Placeholder, replacement)
 

@@ -162,10 +162,19 @@ func clientCliQueryModify(replacer placeholder.Replacer, opts *typed.Options) ge
 		if err != nil {
 			return err
 		}
-		template := `cmd.AddCommand(CmdShow%[2]v())
-%[1]v`
-		replacement := fmt.Sprintf(template, typed.Placeholder,
+		template := `{
+			RpcMethod: "%v",
+			Use: 	 "shows-%v",
+			Short:   "shows %v",
+		},
+
+		%v`
+		replacement := fmt.Sprintf(
+			template,
 			opts.TypeName.UpperCamel,
+			opts.TypeName.Kebab,
+			opts.TypeName.Original,
+			typed.Placeholder,
 		)
 		content := replacer.Replace(f.String(), typed.Placeholder, replacement)
 		newFile := genny.NewFileS(path, content)
