@@ -4,12 +4,11 @@ import (
 	"context"
 
     "<%= ModulePath %>/x/<%= ModuleName %>/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func (k Keeper) <%= QueryName.UpperCamel %>(ctx context.Context,  req *types.Query<%= QueryName.UpperCamel %>Request) (*types.Query<%= QueryName.UpperCamel %>Response, error) {
+func (q queryServer) <%= QueryName.UpperCamel %>(ctx context.Context,  req *types.Query<%= QueryName.UpperCamel %>Request) (*types.Query<%= QueryName.UpperCamel %>Response, error) {
 	if req == nil {
         return nil, status.Error(codes.InvalidArgument, "invalid request")
     }
