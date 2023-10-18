@@ -159,21 +159,20 @@ func cliQueryModify(replacer placeholder.Replacer, opts *Options) genny.RunFn {
 		}
 
 		template := `{
-					RpcMethod: "%v",
-					Use: "%v %s",
-					Short: "%v",
-					PositionalArgs: []*autocliv1.PositionalArgDescriptor{%s},
+					RpcMethod: "%[2]v",
+					Use: "%[3]v",
+					Short: "%[4]v",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{%[5]s},
 				},
 
-				%v`
+				%[1]v`
 		replacement := fmt.Sprintf(
 			template,
-			opts.QueryName.UpperCamel,
-			opts.QueryName.Kebab,
-			opts.Description,
-			opts.ReqFields.String(),
-			strings.TrimSpace(positionalArgs),
 			Placeholder,
+			opts.QueryName.UpperCamel,
+			strings.TrimSpace(fmt.Sprintf("%s %s", opts.QueryName.Kebab, opts.ReqFields.String())),
+			opts.Description,
+			strings.TrimSpace(positionalArgs),
 		)
 		content := replacer.Replace(f.String(), Placeholder, replacement)
 

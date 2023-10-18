@@ -95,15 +95,6 @@ func (f Field) GenesisArgs(value int) string {
 	return dt.GenesisArgs(f.Name, value)
 }
 
-// CLIArgs returns the Datatype CLI args.
-func (f Field) CLIArgs(prefix string, argIndex int) string {
-	dt, ok := datatype.IsSupportedType(f.DatatypeName)
-	if !ok {
-		panic(fmt.Sprintf("unknown type %s", f.DatatypeName))
-	}
-	return dt.CLIArgs(f.Name, f.Datatype, prefix, argIndex)
-}
-
 // ToBytes returns the Datatype byte array cast.
 func (f Field) ToBytes(name string) string {
 	dt, ok := datatype.IsSupportedType(f.DatatypeName)

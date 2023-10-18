@@ -79,7 +79,6 @@ type DataType struct {
 	ToBytes           func(name string) string
 	ToString          func(name string) string
 	ToProtoField      func(datatype, name string, index int) *proto.NormalField
-	CLIArgs           func(name multiformatname.Name, datatype, prefix string, argIndex int) string
 	NonIndex          bool
 }
 
