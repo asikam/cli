@@ -250,12 +250,12 @@ func clientCliQueryModify(replacer placeholder.Replacer, opts *typed.Options) ge
 		template := `{
 			RpcMethod: "%[2]vAll",
 			Use: "list-%[3]v",
-			Short: "list all %[4]v",
+			Short: "List all %[4]v",
 		},
 		{
 			RpcMethod: "%[2]v",
 			Use: "show-%[3]v [id]",
-			Short: "shows a %[4]v",
+			Short: "Shows a %[4]v",
 			PositionalArgs: []*autocliv1.PositionalArgDescriptor{%s},
 		},
 
@@ -621,7 +621,7 @@ func clientCliTxModify(replacer placeholder.Replacer, opts *typed.Options) genny
 		template := `{
 			RpcMethod: "Create%[2]v",
 			Use: "create-%[3]v",
-			Short: "Create %[4]v",
+			Short: "Create a new %[4]v",
 			PositionalArgs: []*autocliv1.PositionalArgDescriptor{%[5]s},
 		},
 		{

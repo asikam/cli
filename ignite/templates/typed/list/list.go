@@ -367,12 +367,12 @@ func clientCliQueryModify(replacer placeholder.Replacer, opts *typed.Options) ge
 		template := `{
 			RpcMethod: "%[2]vAll",
 			Use: "list-%[3]v",
-			Short: "list all %[4]v",
+			Short: "List all %[4]v",
 		},
 		{
 			RpcMethod: "%[2]v",
 			Use: "show-%[3]v [id]",
-			Short: "shows a %[4]v by id",
+			Short: "Shows a %[4]v by id",
 			PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
 		},
 

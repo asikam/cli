@@ -170,7 +170,7 @@ func cliQueryModify(replacer placeholder.Replacer, opts *Options) genny.RunFn {
 			template,
 			Placeholder,
 			opts.QueryName.UpperCamel,
-			strings.TrimSpace(fmt.Sprintf("%s %s", opts.QueryName.Kebab, opts.ReqFields.String())),
+			strings.TrimSpace(fmt.Sprintf("%s%s", opts.QueryName.Kebab, opts.ReqFields.String())),
 			opts.Description,
 			strings.TrimSpace(positionalArgs),
 		)
