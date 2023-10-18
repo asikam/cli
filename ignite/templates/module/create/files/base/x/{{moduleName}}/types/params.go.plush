@@ -2,11 +2,7 @@ package types
 
 import (
 	<%= if (len(params) > 0) { %>"fmt"<% } %>
-
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
-
-var _ paramtypes.ParamSet = (*Params)(nil)
 
 <%= for (param) in params { %>
 var (
@@ -17,11 +13,6 @@ var (
 	Default<%= param.Name.UpperCamel %> <%= param.DataType() %> = <%= param.ValueIndex() %><% } %>
 )
 <% } %>
-
-// ParamKeyTable the param key table for launch module
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
 
 // NewParams creates a new Params instance
 func NewParams(<%= for (param) in params { %>
@@ -37,13 +28,6 @@ func DefaultParams() Params {
 	return NewParams(<%= for (param) in params { %>
         Default<%= param.Name.UpperCamel %>,<% } %>
 	)
-}
-
-// ParamSetPairs get the params.ParamSet
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{<%= for (param) in params { %>
-		paramtypes.NewParamSetPair(Key<%= param.Name.UpperCamel %>, &p.<%= param.Name.UpperCamel %>, validate<%= param.Name.UpperCamel %>),<% } %>
-	}
 }
 
 // Validate validates the set of params
