@@ -346,8 +346,14 @@ func protoTxModify(opts *PacketOptions) genny.RunFn {
 	}
 }
 
+// clientCliTxModify does not use AutoCLI here, because it as a better UX as it is.
 func clientCliTxModify(replacer placeholder.Replacer, opts *PacketOptions) genny.RunFn {
 	return func(r *genny.Runner) error {
+		// TODO
+		// create tx.go if not exist
+		// add send command
+		// edit module.go to a tx command on app module basic
+
 		path := filepath.Join(opts.AppPath, "x", opts.ModuleName, "client/cli/tx.go")
 		f, err := r.Disk.Find(path)
 		if err != nil {
