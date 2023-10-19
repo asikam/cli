@@ -23,6 +23,9 @@ var (
 		GenesisArgs: func(name multiformatname.Name, value int) string {
 			return fmt.Sprintf("%s: \"%d\",\n", name.UpperCamel, value)
 		},
+		CLIArgs: func(name multiformatname.Name, _, prefix string, argIndex int) string {
+			return fmt.Sprintf("%s%s := args[%d]", prefix, name.UpperCamel, argIndex)
+		},
 		ToBytes: func(name string) string {
 			return fmt.Sprintf("%[1]vBytes := []byte(%[1]v)", name)
 		},
@@ -43,6 +46,10 @@ var (
 		},
 		GenesisArgs: func(name multiformatname.Name, value int) string {
 			return fmt.Sprintf("%s: []string{\"%d\"},\n", name.UpperCamel, value)
+		},
+		CLIArgs: func(name multiformatname.Name, _, prefix string, argIndex int) string {
+			return fmt.Sprintf(`%[1]v%[2]v := strings.Split(args[%[3]v], listSeparator)`,
+				prefix, name.UpperCamel, argIndex)
 		},
 		GoCLIImports: []GoImport{{Name: "strings"}},
 		NonIndex:     true,

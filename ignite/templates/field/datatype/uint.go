@@ -23,6 +23,13 @@ var (
 		GenesisArgs: func(name multiformatname.Name, value int) string {
 			return fmt.Sprintf("%s: %d,\n", name.UpperCamel, value)
 		},
+		CLIArgs: func(name multiformatname.Name, _, prefix string, argIndex int) string {
+			return fmt.Sprintf(`%s%s, err := cast.ToUint64E(args[%d])
+            		if err != nil {
+                		return err
+            		}`,
+				prefix, name.UpperCamel, argIndex)
+		},
 		ToBytes: func(name string) string {
 			return fmt.Sprintf(`%[1]vBytes := make([]byte, 8)
   					binary.BigEndian.PutUint64(%[1]vBytes, %[1]v)`, name)
@@ -45,6 +52,18 @@ var (
 		},
 		GenesisArgs: func(name multiformatname.Name, value int) string {
 			return fmt.Sprintf("%s: []uint64{%d},\n", name.UpperCamel, value)
+		},
+		CLIArgs: func(name multiformatname.Name, _, prefix string, argIndex int) string {
+			return fmt.Sprintf(`%[1]vCast%[2]v := strings.Split(args[%[3]v], listSeparator)
+					%[1]v%[2]v := make([]uint64, len(%[1]vCast%[2]v))
+					for i, arg := range %[1]vCast%[2]v {
+						value, err := cast.ToUint64E(arg)
+						if err != nil {
+							return err
+						}
+						%[1]v%[2]v[i] = value
+					}`,
+				prefix, name.UpperCamel, argIndex)
 		},
 		ToProtoField: func(_, name string, index int) *proto.NormalField {
 			return protoutil.NewField(name, "uint64", index, protoutil.Repeated())

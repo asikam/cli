@@ -22,6 +22,13 @@ var DataBool = DataType{
 	GenesisArgs: func(name multiformatname.Name, value int) string {
 		return fmt.Sprintf("%s: %t,\n", name.UpperCamel, value%2 == 0)
 	},
+	CLIArgs: func(name multiformatname.Name, _, prefix string, argIndex int) string {
+		return fmt.Sprintf(`%s%s, err := cast.ToBoolE(args[%d])
+            		if err != nil {
+                		return err
+            		}`,
+			prefix, name.UpperCamel, argIndex)
+	},
 	ToBytes: func(name string) string {
 		return fmt.Sprintf(`%[1]vBytes := []byte{0}
 					if %[1]v {
