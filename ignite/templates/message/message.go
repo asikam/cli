@@ -200,7 +200,7 @@ func clientCliTxModify(replacer placeholder.Replacer, opts *Options) genny.RunFn
 		template := `{
 			RpcMethod: "%[2]v",
 			Use: "%[3]v",
-			Short: "%[4]v",
+			Short: "Send a %[4]v tx",
 			PositionalArgs: []*autocliv1.PositionalArgDescriptor{%[5]s},
 		},
 

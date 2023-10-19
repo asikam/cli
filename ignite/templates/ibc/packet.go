@@ -2,7 +2,9 @@ package ibc
 
 import (
 	"embed"
+	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/emicklei/proto"
@@ -349,13 +351,47 @@ func protoTxModify(opts *PacketOptions) genny.RunFn {
 // clientCliTxModify does not use AutoCLI here, because it as a better UX as it is.
 func clientCliTxModify(replacer placeholder.Replacer, opts *PacketOptions) genny.RunFn {
 	return func(r *genny.Runner) error {
-		// TODO
-		// create tx.go if not exist
-		// add send command
-		// edit module.go to a tx command on app module basic
+		filePath := filepath.Join(opts.AppPath, "x", opts.ModuleName, "client/cli/tx.go")
+		if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
+			content := fmt.Sprintf(`package cli
 
-		path := filepath.Join(opts.AppPath, "x", opts.ModuleName, "client/cli/tx.go")
-		f, err := r.Disk.Find(path)
+			import (
+				"fmt"
+				"time"
+			
+				"github.com/spf13/cobra"
+			
+				"github.com/cosmos/cosmos-sdk/client"
+				"%s/x/%s/types"
+			)
+
+			var DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
+						
+			// GetTxCmd returns the transaction commands for this module
+			func GetTxCmd() *cobra.Command {
+				cmd := &cobra.Command{
+					Use:                        types.ModuleName,
+					Short:                      fmt.Sprintf("%%s transactions subcommands", types.ModuleName),
+					DisableFlagParsing:         true,
+					SuggestionsMinimumDistance: 2,
+					RunE:                       client.ValidateCmd,
+				}
+			
+				// this line is used by starport scaffolding # 1
+			
+				return cmd 
+			}`, opts.ModulePath, opts.ModuleName) // TODO to improve, probably with a template that does not get copied over directly.
+
+			if err := os.MkdirAll(filepath.Dir(filePath), os.ModePerm); err != nil {
+				return err
+			}
+
+			if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
+				return err
+			}
+		}
+
+		f, err := r.Disk.Find(filePath)
 		if err != nil {
 			return err
 		}
@@ -363,7 +399,7 @@ func clientCliTxModify(replacer placeholder.Replacer, opts *PacketOptions) genny
 %[1]v`
 		replacement := fmt.Sprintf(template, Placeholder, opts.PacketName.UpperCamel)
 		content := replacer.Replace(f.String(), Placeholder, replacement)
-		newFile := genny.NewFileS(path, content)
+		newFile := genny.NewFileS(filePath, content)
 		return r.File(newFile)
 	}
 }
