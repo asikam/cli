@@ -89,7 +89,7 @@ func typesKeyModify(opts *typed.Options) genny.RunFn {
 			return err
 		}
 		content := f.String() + fmt.Sprintf(`
-const (
+var (
 	%[1]vKey= collections.NewPrefix("%[1]v/value/")
 )
 `, opts.TypeName.UpperCamel)
